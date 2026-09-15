@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>通信テスト</title>
+</head>
+<body style="font-family:sans-serif;padding:20px;">
+<h2>API通信テスト</h2>
+<button id="btn" style="font-size:18px;padding:12px 24px;">テスト実行</button>
+<pre id="result" style="white-space:pre-wrap;background:#f0f0f0;padding:12px;margin-top:16px;"></pre>
+<script>
+document.getElementById('btn').addEventListener('click', async () => {
+  const result = document.getElementById('result');
+  result.textContent = '送信中...';
+  try {
+    const res = await fetch('/.netlify/functions/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 50,
+        messages: [{ role: 'user', content: 'こんにちはとだけ返してください' }]
+      })
+    });
+    const text = await res.text();
+    result.textContent = 'ステータス: ' + res.status + '\n\n' + text;
+  } catch (err) {
+    result.textContent = 'キャッチされたエラー:\n' + err.name + ': ' + err.message + '\n\n' + String(err.stack || '');
+  }
+});
+</script>
+</body>
+</html>
