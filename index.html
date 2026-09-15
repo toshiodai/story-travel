@@ -1967,7 +1967,7 @@ Respond with ONLY valid JSON, no markdown fences, no preamble, no commentary bef
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             model: "claude-sonnet-4-6",
-            max_tokens: 2200,
+            max_tokens: 1500,
             system: systemPrompt,
             messages: [
               { role: "user", content: "Generate the passage and questions now, as JSON only." }
