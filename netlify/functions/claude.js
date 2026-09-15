@@ -17,8 +17,6 @@ exports.handler = async function (event) {
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  console.log("API key present:", !!apiKey, "length:", apiKey ? apiKey.length : 0);
-
   if (!apiKey) {
     return {
       statusCode: 500,
@@ -43,13 +41,12 @@ exports.handler = async function (event) {
       body: JSON.stringify({
         model,
         max_tokens: incoming.max_tokens || 1024,
+        system: incoming.system || undefined,
         messages: incoming.messages || [],
       }),
     });
 
     const data = await response.text();
-    console.log("Anthropic status:", response.status);
-    console.log("Anthropic body:", data.slice(0, 500));
 
     return {
       statusCode: response.status,
@@ -60,7 +57,6 @@ exports.handler = async function (event) {
       body: data,
     };
   } catch (err) {
-    console.log("Function error:", String(err));
     return {
       statusCode: 500,
       body: JSON.stringify({ error: String(err) }),
