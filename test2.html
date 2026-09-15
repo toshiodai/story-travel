@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>通信テスト2</title>
+</head>
+<body style="font-family:sans-serif;padding:20px;">
+<h2>大きめリクエストのテスト</h2>
+<button id="btn" style="font-size:18px;padding:12px 24px;">テスト実行</button>
+<pre id="result" style="white-space:pre-wrap;background:#f0f0f0;padding:12px;margin-top:16px;"></pre>
+<script>
+document.getElementById('btn').addEventListener('click', async () => {
+  const result = document.getElementById('result');
+  result.textContent = '送信中...';
+  const t0 = Date.now();
+  const bigSystem = "You write English reading material. ".repeat(80);
+  try {
+    const res = await fetch('/.netlify/functions/claude', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2200,
+        system: bigSystem,
+        messages: [{ role: 'user', content: 'Generate the passage and questions now, as JSON only.' }]
+      })
+    });
+    const text = await res.text();
+    const sec = ((Date.now() - t0) / 1000).toFixed(1);
+    result.textContent = '所要時間: ' + sec + '秒\nステータス: ' + res.status + '\n\n' + text.slice(0, 800);
+  } catch (err) {
+    const sec = ((Date.now() - t0) / 1000).toFixed(1);
+    result.textContent = '所要時間: ' + sec + '秒\nキャッチされたエラー:\n' + err.name + ': ' + err.message;
+  }
+});
+</script>
+</body>
+</html>
