@@ -1,4 +1,6 @@
 // netlify/functions/claude.js
+const { applyPromptRules } = require("./prompt-rules");
+
 exports.handler = async function (event) {
   if (event.httpMethod === "OPTIONS") {
     return {
@@ -30,6 +32,7 @@ exports.handler = async function (event) {
     const incoming = JSON.parse(event.body || "{}");
     const allowedModels = ["claude-sonnet-4-6"];
     const model = allowedModels.includes(incoming.model) ? incoming.model : "claude-sonnet-4-6";
+    const system = applyPromptRules(incoming.system || undefined);
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -41,7 +44,7 @@ exports.handler = async function (event) {
       body: JSON.stringify({
         model,
         max_tokens: incoming.max_tokens || 1024,
-        system: incoming.system || undefined,
+        system,
         messages: incoming.messages || [],
       }),
     });
